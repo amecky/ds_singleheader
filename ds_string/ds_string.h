@@ -21,7 +21,7 @@ namespace ds {
 		void append(float f);
 		void append(double d);
 		void append(const_pointer txt);
-		string& operator+=(const string& other);
+		string& operator+=(const string& other);  // FIXME
 
 		iterator begin() { return _first; }
 		iterator end() { return _last; }
@@ -30,8 +30,8 @@ namespace ds {
 
 		const char& operator [] (size_t n) const;
 		const char& at(size_t n) const;
-		const char& back() const;
-		const char& front() const;
+		const char& back() const; // FIXME
+		const char& front() const { return *_first; }
 
 		const_iterator c_str() const;
 		bool is_small() const;
@@ -63,6 +63,7 @@ namespace ds {
 		unsigned int hash_code() const;
 	private:
 		void append(const char* first, const char* last);
+		size_t get_length(const char* t) const;
 		pointer _first;
 		pointer _last;
 		pointer _capacity;
@@ -105,6 +106,10 @@ namespace ds {
 		if (!is_small()) {
 			delete[] _first;
 		}
+	}
+
+	inline void string::clear() {
+		_last = _first;
 	}
 
 	inline const char& string::operator [] (size_t n) const {
@@ -157,6 +162,26 @@ namespace ds {
 		}
 	}
 
+	inline void string::resize(size_t size) {
+		reserve(size);
+		for (pointer it = _last, end = _first + size + 1; it < end; ++it) {
+			*it = 0;
+		}
+		_last = _first + size;
+	}
+
+	inline size_t string::get_length(const char* t) const {
+		size_t len = 0;
+		char temp = '\0';
+		if (!t) {
+			t = &temp;
+		}
+		for (const_iterator it = t; *it; ++it) {
+			++len;
+		}
+		return len;
+	}
+
 	inline void string::append(const_pointer t) {
 		size_t len = 0;
 		char temp = '\0';
@@ -194,6 +219,36 @@ namespace ds {
 		char temp[16];
 		sprintf_s(temp, "%g", f);
 		append(temp);
+	}
+
+	inline bool string::find(const_pointer t, size_t offset, size_t* index) const {
+		size_t tl = get_length(t);
+		size_t cl = size();
+		if (tl > cl) {
+			return false;
+		}	
+		char first = t[0];
+		for (size_t i = offset; i <= cl - tl; ++i) {
+			char current = _first[i];
+			bool found = true;
+			if (current == first) {
+				for (unsigned j = 1; j < tl; ++j) {
+					current = _first[i + j];
+					char d = t[j];
+					if (current != d) {
+						found = false;
+						break;
+					}
+				}
+				if (found) {
+					if (index != 0) {
+						*index = i;
+					}
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 #endif
