@@ -52,15 +52,16 @@ namespace ds {
 		//pop_back
 
 		bool find(const_pointer t, size_t offset = 0, size_t* index = 0) const;
-		bool rfind(const_pointer t, size_t offset = 0, size_t* index = 0) const;
-		bool find_first_of(const_pointer t, size_t offset = 0, size_t* index = 0) const;
-		bool find_last_of(const_pointer t, size_t offset = 0, size_t* index = 0) const;
-		bool find_last_not_of(const_pointer t, size_t offset = 0, size_t* index = 0) const;
-		bool compare(const_pointer t) const;
-		string substr(size_t start) const;
-		string substr(size_t start, size_t end) const;
+		bool rfind(const_pointer t, size_t offset = 0, size_t* index = 0) const; // FIXME
+		bool find_first_of(const_pointer t, size_t offset = 0, size_t* index = 0) const; // FIXME
+		bool find_last_of(const_pointer t, size_t offset = 0, size_t* index = 0) const; // FIXME
+		bool find_last_not_of(const_pointer t, size_t offset = 0, size_t* index = 0) const; // FIXME
+		bool compare(const_pointer t, bool caseSensitive = false) const;
+		bool compare(const string& t, bool caseSensitive = false) const;
+		string substr(size_t start) const; // FIXME
+		string substr(size_t start, size_t end) const; // FIXME
 
-		unsigned int hash_code() const;
+		unsigned int hash_code() const; // FIXME
 	private:
 		void append(const char* first, const char* last);
 		size_t get_length(const char* t) const;
@@ -72,13 +73,13 @@ namespace ds {
 
 	namespace str {
 
-		string value_of(int i) {
+		inline string value_of(int i) {
 			char tmp[16];
 			sprintf_s(tmp, "%d", i);
 			return string(tmp);
 		}
 
-		string value_of(float f) {
+		inline string value_of(float f) {
 			char tmp[16];
 			sprintf_s(tmp, "%g", f);
 			return string(tmp);
@@ -249,6 +250,30 @@ namespace ds {
 			}
 		}
 		return false;
+	}
+
+	inline bool string::compare(const_pointer t, bool caseSensitive) const {
+		size_t tl = get_length(t);
+		if (tl != size()) {
+			return false;
+		}
+		for (size_t i = 0; i < tl; ++i) {
+			if (caseSensitive) {
+				if (tolower(_first[i]) != tolower(t[i])) {
+					return false;
+				}
+			}
+			else {
+				if (_first[i] != t[i]) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	inline bool string::compare(const string& t, bool caseSensitive) const {
+		return compare(t.c_str(), caseSensitive);
 	}
 
 #endif

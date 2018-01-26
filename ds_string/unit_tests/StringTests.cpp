@@ -1,4 +1,4 @@
-#include "..\src\catch.hpp"
+#include "catch.hpp"
 #include "..\ds_string.h"
 
 TEST_CASE("Empty string", "[ds_string]") {
@@ -55,4 +55,15 @@ TEST_CASE("Find string", "[ds_string]") {
 	REQUIRE(idx == 8);
 	ret = str.find("ello", 6, &idx);
 	REQUIRE_FALSE(ret);
+}
+
+TEST_CASE("Compare string", "[ds_string]") {	
+	ds::string str("Hello world");
+	bool ret = str.compare("Hello");
+	REQUIRE_FALSE(ret);
+	ds::string next("Hello world");
+	REQUIRE(str.compare(next.c_str()));
+	REQUIRE(str.compare(next));
+	REQUIRE(str.compare("hELLo WORLD",true));
+	
 }
