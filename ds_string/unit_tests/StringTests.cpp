@@ -96,12 +96,18 @@ TEST_CASE("Append double to string", "[ds_string]") {
 	REQUIRE(strcmp(nr.c_str(), "1024.66") == 0);
 }
 
+TEST_CASE("Operator +=", "[ds_string]") {
+	ds::string nr("Hello");
+	nr += ds::string(" world");
+	REQUIRE(nr.is_small());
+	REQUIRE(strcmp(nr.c_str(), "Hello world") == 0);
+}
+
 TEST_CASE("sprintf string", "[ds_string]") {
 	ds::string nr;
 	nr.sprintf("%d = %g and %s", 100, 34.56f, "Hello world");
 	REQUIRE_FALSE(nr.is_small());
 	REQUIRE(strcmp(nr.c_str(), "100 = 34.56 and Hello world") == 0);
 	ds::string str = nr.sprintf("%d / %d / %d", 100, 200, 300);
-	printf("str: %s\n", str.c_str());
 	REQUIRE(strcmp(str.c_str(), "100 / 200 / 300") == 0);
 }

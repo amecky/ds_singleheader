@@ -5,6 +5,9 @@ namespace ds {
 
 	static const char NULL_CHAR = '\0';
 
+	static const unsigned int FNV_Prime = 0x01000193; //   16777619
+	static const unsigned int FNV_Seed = 0x811C9DC5; // 2166136261
+
 	class string {
 
 	public:
@@ -24,7 +27,7 @@ namespace ds {
 		void append(const_pointer txt);
 		void append(const string& txt);
 		string sprintf(const char* fmt, ...);
-		string& operator+=(const string& other);  // FIXME
+		string& operator+=(const string& other);
 
 		iterator begin() { return _first; }
 		iterator end() { return _last; }
@@ -64,7 +67,7 @@ namespace ds {
 		string substr(size_t start) const; // FIXME
 		string substr(size_t start, size_t end) const; // FIXME
 
-		unsigned int hash_code() const; // FIXME
+		unsigned int hash_code(unsigned int hash = FNV_Seed) const;
 	private:
 		void append(const char* first, const char* last);
 		size_t get_length(const char* t) const;
@@ -115,7 +118,6 @@ namespace ds {
 
 	inline string::~string() {
 		if (!is_small()) {
-			printf("not small -> deleting\n");
 			delete[] _first;
 		}
 	}
@@ -206,9 +208,14 @@ namespace ds {
 		append(t, t + len);
 	}
 
+	inline string& string::operator+=(const string& other) {
+		size_t len = other.size();
+		append(other.c_str(), other.c_str() + len);
+		return *this;
+	}
+
 	inline void string::append(const string& t) {
 		size_t len = get_length(t.c_str());
-		printf("append string - len: %d\n", len);
 		append(t.c_str(), t.c_str() + len);
 	}
 
@@ -250,17 +257,14 @@ namespace ds {
 		int size = fs * 2 + 50;   
 		string str;
 		va_list ap;
-		printf("sprintf: size %f\n",fs);
 		while (1) {     
 			str.resize(size);
 			va_start(ap, fmt);
 			int n = vsnprintf((char *)str.c_str(), size, fmt, ap);
-			printf("sprintf - generated %s\n", str.c_str());
 			va_end(ap);
 			if (n > -1 && n < size) {  
 				str.resize(n);
 				append(str);
-				printf("sprintf - we are done: %s\n", c_str());
 				break;
 			}
 			if (n > -1) {
@@ -325,6 +329,16 @@ namespace ds {
 
 	inline bool string::compare(const string& t, bool caseSensitive) const {
 		return compare(t.c_str(), caseSensitive);
+	}
+
+	
+
+	inline unsigned int string::hash_code(unsigned int hash) const {
+		const unsigned char* ptr = (const unsigned char*)_first;
+		while (*ptr) {
+			hash = (*ptr++ ^ hash) * FNV_Prime;
+		}
+		return hash;
 	}
 
 #endif
