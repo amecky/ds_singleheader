@@ -4,3 +4,8 @@ singleheader.VC.db
 singleheader.sln
 singleheader.vcxproj
 singleheader.vcxproj.filters
+x64/
+.vs/singleheader/v14/.suo
+catch.hpp
+singleheader.opensdf
+singleheader.sdf

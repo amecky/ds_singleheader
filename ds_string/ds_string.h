@@ -15,12 +15,15 @@ namespace ds {
 		typedef const char* const_pointer;
 		string();
 		string(const char* s);
+		string(const string& other);
 		~string();
 		void append(char c);
 		void append(int i);
 		void append(float f);
 		void append(double d);
 		void append(const_pointer txt);
+		void append(const string& txt);
+		string sprintf(const char* fmt, ...);
 		string& operator+=(const string& other);  // FIXME
 
 		iterator begin() { return _first; }
@@ -88,6 +91,8 @@ namespace ds {
 
 #ifdef DS_STRING_IMPLEMENTATION
 
+#include <stdarg.h>
+
 	inline string::string() : _first(_buffer), _last(_buffer), _capacity(_buffer + 16) {
 	}
 
@@ -103,8 +108,14 @@ namespace ds {
 		append(s, s + len);
 	}
 
+	inline string::string(const string& s) : _first(_buffer), _last(_buffer), _capacity(_buffer + 16) {
+		size_t len = s.size();		
+		append(s.c_str(), s.c_str() + len);
+	}
+
 	inline string::~string() {
 		if (!is_small()) {
+			printf("not small -> deleting\n");
 			delete[] _first;
 		}
 	}
@@ -195,6 +206,12 @@ namespace ds {
 		append(t, t + len);
 	}
 
+	inline void string::append(const string& t) {
+		size_t len = get_length(t.c_str());
+		printf("append string - len: %d\n", len);
+		append(t.c_str(), t.c_str() + len);
+	}
+
 	inline void string::append(const char* first, const char* last) {
 		const size_t newsize = (size_t)((_last - _first) + (last - first) + 1);
 		if (_first + newsize > _capacity) {
@@ -220,6 +237,40 @@ namespace ds {
 		char temp[16];
 		sprintf_s(temp, "%g", f);
 		append(temp);
+	}
+
+	inline void string::append(double d) {
+		char temp[16];
+		sprintf_s(temp, "%g", d);
+		append(temp);
+	}
+
+	inline string string::sprintf(const char* fmt, ...) {
+		size_t fs = get_length(fmt);
+		int size = fs * 2 + 50;   
+		string str;
+		va_list ap;
+		printf("sprintf: size %f\n",fs);
+		while (1) {     
+			str.resize(size);
+			va_start(ap, fmt);
+			int n = vsnprintf((char *)str.c_str(), size, fmt, ap);
+			printf("sprintf - generated %s\n", str.c_str());
+			va_end(ap);
+			if (n > -1 && n < size) {  
+				str.resize(n);
+				append(str);
+				printf("sprintf - we are done: %s\n", c_str());
+				break;
+			}
+			if (n > -1) {
+				size = n + 1;
+			}
+			else {
+				size *= 2;
+			}
+		}
+		return str;
 	}
 
 	inline bool string::find(const_pointer t, size_t offset, size_t* index) const {
