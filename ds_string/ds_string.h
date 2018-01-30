@@ -50,22 +50,27 @@ namespace ds {
 		void clear();
 
 		//push_back
-		//assign
-		//insert
-		//erase
-		//replace
-		//swap
-		//pop_back
+		string& assign(const string& other); // FIXME
+		string& insert(size_t pos, const string& str); // FIXME
+		string& insert(size_t pos, const char* str); // FIXME
+		string& erase(size_t pos, size_t len = 0);
+		//iterator erase(iterator p);
+		//iterator erase(iterator first, iterator last);
+
+		string& replace(const char old_char, const char new_char, bool caseSensitive = true);
+		//void pop_back();
 
 		bool find(const_pointer t, size_t offset = 0, size_t* index = 0) const;
+
 		bool rfind(const_pointer t, size_t offset = 0, size_t* index = 0) const; // FIXME
 		bool find_first_of(const_pointer t, size_t offset = 0, size_t* index = 0) const; // FIXME
 		bool find_last_of(const_pointer t, size_t offset = 0, size_t* index = 0) const; // FIXME
 		bool find_last_not_of(const_pointer t, size_t offset = 0, size_t* index = 0) const; // FIXME
-		bool compare(const_pointer t, bool caseSensitive = false) const;
-		bool compare(const string& t, bool caseSensitive = false) const;
-		string substr(size_t start) const; // FIXME
-		string substr(size_t start, size_t end) const; // FIXME
+
+		bool compare(const_pointer t, bool caseSensitive = true) const;
+		bool compare(const string& t, bool caseSensitive = true) const;
+		string substr(size_t start) const; 
+		string substr(size_t start, size_t end) const;
 
 		unsigned int hash_code(unsigned int hash = FNV_Seed) const;
 	private:
@@ -331,14 +336,81 @@ namespace ds {
 		return compare(t.c_str(), caseSensitive);
 	}
 
-	
-
 	inline unsigned int string::hash_code(unsigned int hash) const {
 		const unsigned char* ptr = (const unsigned char*)_first;
 		while (*ptr) {
 			hash = (*ptr++ ^ hash) * FNV_Prime;
 		}
 		return hash;
+	}
+
+	inline string string::substr(size_t start, size_t end) const {
+		string str;
+		if (start < size()) {
+			if (end > size()) {
+				end = size();
+			}
+			size_t delta = end - start + 1;
+			str.reserve(delta);
+			str.append(_first + start, _first + start + delta);
+		}
+		return str;
+	}
+
+	inline string string::substr(size_t start) const {
+		return substr(start, size());
+	}
+
+	string& string::replace(const char old_char, const char new_char, bool caseSensitive) {
+		for (pointer it = _first; it != _last; ++it) {
+			if (!caseSensitive) {
+				if (tolower(*it) == tolower(old_char)) {
+					*it = new_char;
+				}
+			}
+			if (*it == old_char) {
+				*it = new_char;
+			}
+		}
+		return *this;
+	}
+
+	inline string& string::erase(size_t pos, size_t len) {
+		if (pos < size()) {
+			size_t e = pos + len + 1;
+			if (e > size()) {
+				e = size();
+			}
+			pointer newit = _first + e;
+			pointer end = _last;
+			for (pointer it = _first + pos; it != end; ++it, ++newit) {
+				*it = *newit;
+			}
+			--_last;
+			*_last = '\0';
+		}
+		return *this;
+	}
+
+	string& string::insert(size_t pos, const string& str) {
+		size_t l = str.size();
+		size_t e = size();
+		resize(size() + l);
+		pointer it = _first + pos;
+		pointer next = _first + pos + l;
+		for (size_t i = e - 1; i > pos; --i) {
+			_first[i] = _first[i + 1];
+		}
+		for (size_t i = 0; i < l; ++i) {
+			_first[pos + i] = str[i];
+			++_last;
+		}
+		*_last = '\0';
+		return *this;
+	}
+
+	string& string::insert(size_t pos, const char* str) {
+		return *this;
 	}
 
 #endif

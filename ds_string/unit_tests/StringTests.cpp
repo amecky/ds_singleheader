@@ -111,3 +111,84 @@ TEST_CASE("sprintf string", "[ds_string]") {
 	ds::string str = nr.sprintf("%d / %d / %d", 100, 200, 300);
 	REQUIRE(strcmp(str.c_str(), "100 / 200 / 300") == 0);
 }
+
+TEST_CASE("Substr - basic", "[ds_string]") {
+	ds::string nr("Hello");
+	ds::string sub = nr.substr(0, 2);
+	REQUIRE(sub.is_small());
+	REQUIRE(strcmp(sub.c_str(), "Hel") == 0);
+}
+
+TEST_CASE("Substr - too large", "[ds_string]") {
+	ds::string nr("Hello");
+	ds::string sub = nr.substr(0, 20);
+	REQUIRE(sub.is_small());
+	REQUIRE(strcmp(sub.c_str(), "Hello") == 0);
+}
+
+TEST_CASE("Substr - offset and too large", "[ds_string]") {
+	ds::string nr("Hello");
+	ds::string sub = nr.substr(3, 20);
+	REQUIRE(sub.is_small());
+	REQUIRE(strcmp(sub.c_str(), "lo") == 0);
+}
+
+TEST_CASE("Substr - offset", "[ds_string]") {
+	ds::string nr("Hello");
+	ds::string sub = nr.substr(3);
+	REQUIRE(sub.is_small());
+	REQUIRE(strcmp(sub.c_str(), "lo") == 0);
+}
+
+TEST_CASE("Substr - offset too large", "[ds_string]") {
+	ds::string nr("Hello");
+	ds::string sub = nr.substr(30);
+	REQUIRE(sub.is_small());
+	REQUIRE(sub.size() == 0);
+	REQUIRE(sub.is_empty());
+	REQUIRE(strcmp(sub.c_str(), "") == 0);
+}
+
+TEST_CASE("Erase - one char", "[ds_string]") {
+	ds::string nr("Hello");
+	nr.erase(2);
+	REQUIRE(strcmp(nr.c_str(), "Helo") == 0);
+}
+
+TEST_CASE("Erase - one char out of scope", "[ds_string]") {
+	ds::string nr("Hello");
+	nr.erase(20);
+	REQUIRE(strcmp(nr.c_str(), "Hello") == 0);
+}
+
+TEST_CASE("Erase - 3 chars", "[ds_string]") {
+	ds::string nr("Hello");
+	nr.erase(1,3);
+	REQUIRE(strcmp(nr.c_str(), "H") == 0);
+}
+
+TEST_CASE("Erase - too much chars", "[ds_string]") {
+	ds::string nr("Hello");
+	nr.erase(1, 30);
+	REQUIRE(strcmp(nr.c_str(), "H") == 0);
+}
+
+TEST_CASE("Replace one char", "[ds_string]") {
+	ds::string nr("Hello");
+	nr.replace('l', 'm');
+	REQUIRE(strcmp(nr.c_str(), "Hemmo") == 0);
+}
+
+TEST_CASE("Replace one char case sensitive", "[ds_string]") {
+	ds::string nr("Hello");
+	nr.replace('L', 'm', true);
+	REQUIRE(strcmp(nr.c_str(), "Hello") == 0);
+}
+
+TEST_CASE("Insert string", "[ds_string]") {
+	ds::string nr("Hello");
+	ds::string is("world");
+	nr.insert(3, is);
+	printf("nr: %s\n", nr.c_str());
+	REQUIRE(strcmp(nr.c_str(), "Hello") == 0);
+}
