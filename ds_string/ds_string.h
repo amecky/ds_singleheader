@@ -395,21 +395,46 @@ namespace ds {
 	string& string::insert(size_t pos, const string& str) {
 		size_t l = str.size();
 		size_t e = size();
-		resize(size() + l);
-		pointer it = _first + pos;
-		pointer next = _first + pos + l;
-		for (size_t i = e - 1; i > pos; --i) {
-			_first[i] = _first[i + 1];
+		if (pos > e) {
+			append(str);
 		}
-		for (size_t i = 0; i < l; ++i) {
-			_first[pos + i] = str[i];
-			++_last;
+		else {
+			resize(size() + l);
+			size_t delta = e - pos;
+			pointer it = _first + pos;
+			pointer next = _first + pos + l;
+			for (size_t i = delta; i > 0; --i) {
+				_first[pos + l + i - 1] = _first[pos + i - 1];
+			}
+			for (size_t i = 0; i < l; ++i) {
+				_first[pos + i] = str[i];
+				++_last;
+			}
+			*_last = '\0';
 		}
-		*_last = '\0';
 		return *this;
 	}
 
 	string& string::insert(size_t pos, const char* str) {
+		size_t l = strlen(str);
+		size_t e = size();
+		if (pos > e) {
+			append(str);
+		}
+		else {
+			resize(size() + l);
+			size_t delta = e - pos;
+			pointer it = _first + pos;
+			pointer next = _first + pos + l;
+			for (size_t i = delta; i > 0; --i) {
+				_first[pos + l + i - 1] = _first[pos + i - 1];
+			}
+			for (size_t i = 0; i < l; ++i) {
+				_first[pos + i] = str[i];
+				++_last;
+			}
+			*_last = '\0';
+		}
 		return *this;
 	}
 

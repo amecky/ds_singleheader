@@ -189,6 +189,38 @@ TEST_CASE("Insert string", "[ds_string]") {
 	ds::string nr("Hello");
 	ds::string is("world");
 	nr.insert(3, is);
+	REQUIRE(strcmp(nr.c_str(), "Helworldlo") == 0);
+}
+
+TEST_CASE("Insert small string", "[ds_string]") {
+	ds::string nr("Hello");
+	ds::string is("w");
+	nr.insert(3, is);
+	REQUIRE(strcmp(nr.c_str(), "Helwlo") == 0);
+}
+
+TEST_CASE("Insert small string way beyond", "[ds_string]") {
+	ds::string nr("Hello");
+	ds::string is("w");
+	nr.insert(39, is);
 	printf("nr: %s\n", nr.c_str());
-	REQUIRE(strcmp(nr.c_str(), "Hello") == 0);
+	REQUIRE(strcmp(nr.c_str(), "Hellow") == 0);
+}
+
+TEST_CASE("Insert const char", "[ds_string]") {
+	ds::string nr("Hello");
+	nr.insert(3, "ThisIsMe");
+	REQUIRE(strcmp(nr.c_str(), "HelThisIsMelo") == 0);
+}
+
+TEST_CASE("Insert small const char", "[ds_string]") {
+	ds::string nr("Hello");
+	nr.insert(0, "w");	
+	REQUIRE(strcmp(nr.c_str(), "wHello") == 0);
+}
+
+TEST_CASE("Insert small const char way beyond", "[ds_string]") {
+	ds::string nr("Hello");
+	nr.insert(20, "w");
+	REQUIRE(strcmp(nr.c_str(), "Hellow") == 0);
 }
