@@ -1,7 +1,31 @@
 #pragma once
+// -----------------------------------------------------------------
+//
+// This is a lightweight string implementation. It uses the small
+// string approach introduced by LLVM. This means that it uses
+// an internal buffer of 16 chars and will only allocate memory
+// if the string will exceed this limit. 
+// 
+// It is a singleheader implementation. You need to define
+// #define DS_STRING_IMPLEMENTATION inside one of your source
+// files to include the entire implementation. The best place
+// would be the main.cpp 
+// Example:
+// #define DS_STRING_IMPLEMENTATION
+// include <ds_string.h>
+//
+// author : amecky@gmail.com
+// version: 1.0
+// git    : https://github.com/amecky/ds_singleheader
+// 
+// Changelog:
+//   - initial release
+// -----------------------------------------------------------------
 #define DS_STRING_IMPLEMENTATION
 
 namespace ds {
+
+	static const unsigned int SMALL_BUFFER_SIZE = 16;
 
 	static const char NULL_CHAR = '\0';
 
@@ -36,8 +60,6 @@ namespace ds {
 
 		const char& operator [] (size_t n) const;
 		const char& at(size_t n) const;
-		const char& back() const; // FIXME
-		const char& front() const { return *_first; }
 
 		const_iterator c_str() const;
 		bool is_small() const;
@@ -49,24 +71,13 @@ namespace ds {
 		void reserve(size_t s);
 		void clear();
 
-		//push_back
 		string& assign(const string& other); // FIXME
-		string& insert(size_t pos, const string& str); // FIXME
-		string& insert(size_t pos, const char* str); // FIXME
+		string& insert(size_t pos, const string& str);
+		string& insert(size_t pos, const char* str); 
 		string& erase(size_t pos, size_t len = 0);
-		//iterator erase(iterator p);
-		//iterator erase(iterator first, iterator last);
-
 		string& replace(const char old_char, const char new_char, bool caseSensitive = true);
-		//void pop_back();
 
 		bool find(const_pointer t, size_t offset = 0, size_t* index = 0) const;
-
-		bool rfind(const_pointer t, size_t offset = 0, size_t* index = 0) const; // FIXME
-		bool find_first_of(const_pointer t, size_t offset = 0, size_t* index = 0) const; // FIXME
-		bool find_last_of(const_pointer t, size_t offset = 0, size_t* index = 0) const; // FIXME
-		bool find_last_not_of(const_pointer t, size_t offset = 0, size_t* index = 0) const; // FIXME
-
 		bool compare(const_pointer t, bool caseSensitive = true) const;
 		bool compare(const string& t, bool caseSensitive = true) const;
 		string substr(size_t start) const; 
@@ -79,7 +90,7 @@ namespace ds {
 		pointer _first;
 		pointer _last;
 		pointer _capacity;
-		char _buffer[16];
+		char _buffer[SMALL_BUFFER_SIZE];
 	};
 
 	namespace str {
@@ -95,16 +106,18 @@ namespace ds {
 			sprintf_s(tmp, "%g", f);
 			return string(tmp);
 		}
+
+		
 	}
 
 #ifdef DS_STRING_IMPLEMENTATION
 
 #include <stdarg.h>
 
-	inline string::string() : _first(_buffer), _last(_buffer), _capacity(_buffer + 16) {
+	inline string::string() : _first(_buffer), _last(_buffer), _capacity(_buffer + SMALL_BUFFER_SIZE) {
 	}
 
-	inline string::string(const char* s) : _first(_buffer), _last(_buffer), _capacity(_buffer + 16) {
+	inline string::string(const char* s) : _first(_buffer), _last(_buffer), _capacity(_buffer + SMALL_BUFFER_SIZE) {
 		size_t len = 0;
 		char temp = '\0';
 		if (!s) {
@@ -116,7 +129,7 @@ namespace ds {
 		append(s, s + len);
 	}
 
-	inline string::string(const string& s) : _first(_buffer), _last(_buffer), _capacity(_buffer + 16) {
+	inline string::string(const string& s) : _first(_buffer), _last(_buffer), _capacity(_buffer + SMALL_BUFFER_SIZE) {
 		size_t len = s.size();		
 		append(s.c_str(), s.c_str() + len);
 	}
@@ -220,7 +233,7 @@ namespace ds {
 	}
 
 	inline void string::append(const string& t) {
-		size_t len = get_length(t.c_str());
+		size_t len = t.size();
 		append(t.c_str(), t.c_str() + len);
 	}
 
@@ -259,7 +272,7 @@ namespace ds {
 
 	inline string string::sprintf(const char* fmt, ...) {
 		size_t fs = get_length(fmt);
-		int size = fs * 2 + 50;   
+		size_t size = fs * 2 + 50;   
 		string str;
 		va_list ap;
 		while (1) {     
@@ -435,6 +448,13 @@ namespace ds {
 			}
 			*_last = '\0';
 		}
+		return *this;
+	}
+
+	string& string::assign(const string& other) {
+		clear();
+		resize(other.size());
+		append(other);
 		return *this;
 	}
 

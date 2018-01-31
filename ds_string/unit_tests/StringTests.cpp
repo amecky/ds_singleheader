@@ -203,6 +203,13 @@ TEST_CASE("Insert small string way beyond", "[ds_string]") {
 	ds::string nr("Hello");
 	ds::string is("w");
 	nr.insert(39, is);
+	REQUIRE(strcmp(nr.c_str(), "Hellow") == 0);
+}
+
+TEST_CASE("Assign other string", "[ds_string]") {
+	ds::string nr("Hello this is me and my string");
+	ds::string is("The short version");
+	nr.assign(is);
 	printf("nr: %s\n", nr.c_str());
 	REQUIRE(strcmp(nr.c_str(), "Hellow") == 0);
 }
