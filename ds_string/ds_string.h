@@ -453,7 +453,6 @@ namespace ds {
 
 	string& string::assign(const string& other) {
 		clear();
-		resize(other.size());
 		append(other);
 		return *this;
 	}

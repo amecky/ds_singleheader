@@ -210,8 +210,7 @@ TEST_CASE("Assign other string", "[ds_string]") {
 	ds::string nr("Hello this is me and my string");
 	ds::string is("The short version");
 	nr.assign(is);
-	printf("nr: %s\n", nr.c_str());
-	REQUIRE(strcmp(nr.c_str(), "Hellow") == 0);
+	REQUIRE(strcmp(nr.c_str(), "The short version") == 0);
 }
 
 TEST_CASE("Insert const char", "[ds_string]") {
