@@ -33,7 +33,7 @@ namespace ds {
 		}
 
 		~smallvector() {
-			if (!isSmall()) {
+			if (!is_small()) {
 				T* ptr = _begin;
 				size_t s = size();
 				for (size_t i = 0; i < s; ++i) {
@@ -164,43 +164,49 @@ namespace ds {
 		}
 
 		reference operator[](size_t idx) {
+			// FIXME: how to handle out of index
 			return begin()[idx];
 		}
 
 		const_reference operator[](size_t idx) const {
+			// FIXME: how to handle out of index
 			return begin()[idx];
 		}
 
 		reference at(size_t idx) {
+			// FIXME: how to handle out of index
 			return begin()[idx];
 		}
 
 		const_reference at(size_t idx) const {
+			// FIXME: how to handle out of index
 			return begin()[idx];
+		}
+
+		bool is_small() const {
+			return _begin == &_buffer[0];
 		}
 
 	private:
 
-		bool isSmall() const {
-			return _begin == &_buffer[0];
-		}
-
 		void grow(size_t newCapacity) {
-			T* tmp = new T[newCapacity];
-			size_t s = size();
-			memcpy(tmp, _begin, _capacity * sizeof(T));
-			if (!isSmall()) {
-				T* ptr = _begin;
+			if (newCapacity > N) {
+				T* tmp = new T[newCapacity];
 				size_t s = size();
-				for (size_t i = 0; i < s; ++i) {
-					Destruct<T>(ptr);
-					++ptr;
+				memcpy(tmp, _begin, _capacity * sizeof(T));
+				if (!is_small()) {
+					T* ptr = _begin;
+					size_t s = size();
+					for (size_t i = 0; i < s; ++i) {
+						Destruct<T>(ptr);
+						++ptr;
+					}
+					delete[] _begin;
 				}
-				delete[] _begin;
+				_begin = tmp;
+				_end = _begin + s;
+				_capacity = newCapacity;
 			}
-			_begin = tmp;
-			_end = _begin + s;
-			_capacity = newCapacity;
 		}
 		T _buffer[N];
 		size_t _capacity;

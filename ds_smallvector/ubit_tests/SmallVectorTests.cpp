@@ -34,3 +34,29 @@ TEST_CASE("ds_smallvector - Erase last value", "[ds_smallvector]") {
 	REQUIRE(v.is_empty());
 	
 }
+
+TEST_CASE("ds_smallvector - At value", "[ds_smallvector]") {
+	ds::smallvector<int> v;
+	v.push_back(100);
+	v.push_back(200);
+	v.push_back(300);
+	v.push_back(400);
+	v.push_back(500);
+	REQUIRE(v.size() == 5);
+	REQUIRE_FALSE(v.is_empty());
+	REQUIRE(v.at(4) == 500);
+}
+
+TEST_CASE("ds_smallvector - Grow out", "[ds_smallvector]") {
+	ds::smallvector<int> v;
+	for (int i = 0; i < 15; ++i) {
+		v.push_back(100 + 10 * i);
+	}
+	REQUIRE(v.size() == 15);
+	REQUIRE(v.is_small());
+	for (int i = 0; i < 15; ++i) {
+		v.push_back(200 + 10 * i);
+	}
+	REQUIRE(v.size() == 30);
+	REQUIRE_FALSE(v.is_small());
+}
