@@ -54,9 +54,11 @@ TEST_CASE("ds_smallvector - Grow out", "[ds_smallvector]") {
 	}
 	REQUIRE(v.size() == 15);
 	REQUIRE(v.is_small());
+	REQUIRE(v.capacity() == 16);
 	for (int i = 0; i < 15; ++i) {
 		v.push_back(200 + 10 * i);
 	}
 	REQUIRE(v.size() == 30);
 	REQUIRE_FALSE(v.is_small());
+	REQUIRE(v.capacity() == 32);
 }

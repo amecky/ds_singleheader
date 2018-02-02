@@ -69,6 +69,7 @@ namespace ds {
 
 		void push_back(const_reference t) {
 			if ((size() + 1) >= _capacity) {
+				// FIXME: if is_small() try to use max first
 				grow(_capacity * 2);
 			}
 			memcpy(_end, &t, sizeof(T));
