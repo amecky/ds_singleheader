@@ -16,6 +16,9 @@ struct array_header {
 #define array_free(a) \
 	((a) ? free(array_header(a)),0 : 0)
 
+#define array_clear(a) \
+	((a) ? array_header(a)->size = 0 : 0)
+
 #define array_header(a) \
     ((array_header*)((char *)(a) - sizeof(array_header)))
 

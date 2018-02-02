@@ -32,3 +32,17 @@ TEST_CASE("Remove single value", "[ds_stretchbuffer]") {
 	REQUIRE(data[0].i == 200);
 	array_free(data);
 }
+
+TEST_CASE("Clear array", "[ds_stretchbuffer]") {
+	TestData* data = NULL;
+	TestData td = { 100,1.23f };
+	array_push(data, td);
+	TestData nd = { 200, 2.34f };
+	array_push(data, nd);
+	REQUIRE(array_size(data) == 2);
+	REQUIRE(array_capacity(data) == 8);
+	array_clear(data);
+	REQUIRE(array_size(data) == 0);
+	REQUIRE(array_capacity(data) == 8);
+	array_free(data);
+}
